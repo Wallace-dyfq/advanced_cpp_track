@@ -46,10 +46,14 @@ const Vector3F Vector3F::operator- (const Vector3F &v) const {
   return Vector3F(*this) -= v;
 }
 
-const Vector3F operator* (const Vector3F &v, float f) {
+const Vector3F operator* (const Vector3F & v, float f) {
   Vector3F tmp(v);
   tmp *= f;
   return tmp;
+}
+
+const Vector3F operator* (float f, const Vector3F &v ) {
+  return v * f;
 }
 
 const Vector3F Vector3F::operator/ (const float f) const {
@@ -57,7 +61,7 @@ const Vector3F Vector3F::operator/ (const float f) const {
 }
 
 const Vector3F Vector3F::operator- () const {
-  return (*this) *= -1;
+  return Vector3F(*this) *= -1;
 }
 
 
@@ -76,11 +80,11 @@ float & Vector3F::operator() (int i){  // use in LHS
 
 
 
-ostream & operator<< (ostream &os, const Vector3F &v) {
+std::ostream & operator<< (std::ostream &os, const Vector3F &v) {
   os<< "("
-    << v[0] <<", "
-    << v[1] <<", "
-    << v[2] <<")";
+    << v(0) <<", "
+    << v(1) <<", "
+    << v(2) <<")";
   return os;
 }
 

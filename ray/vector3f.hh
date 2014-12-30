@@ -55,9 +55,10 @@ class Vector3F {
 
 // Multiply a vector with a float
 const Vector3F operator* (const Vector3F &v, float f) ;
+const Vector3F operator* (float f, const Vector3F &v ) ;
 
 // stream-output operator 
-ostream & operator<< (ostream &os, const Vector3F &v) ;
+std::ostream & operator<< (std::ostream &os, const Vector3F &v) ;
 
 
 
