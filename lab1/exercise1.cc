@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// function generator
 int RandomNumber() {
   //  srand(time(NULL));
   return (std::rand()%100+1); }
