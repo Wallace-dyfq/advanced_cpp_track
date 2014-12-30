@@ -12,3 +12,6 @@
 *.la
 *.a
 *.out
+
+# gtest files
+ray/gtest-1.7.0/*
