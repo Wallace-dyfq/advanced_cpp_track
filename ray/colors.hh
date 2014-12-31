@@ -15,6 +15,8 @@ class Colors {
   Colors() : red(0), green(0), blue(0) {}
   Colors(float r, float g, float b) : red(r), green(g), blue(b) {}
 
+  // Destructor
+  ~Colors() {}
   // Getters // Accessors
   const float get_red() const {return red; }
   const float get_blue() const {return blue;}

@@ -14,6 +14,8 @@ class Vector3F {
   Vector3F();
   Vector3F(float x, float y, float z);
 
+  // Destructor
+  ~Vector3F() {};
   // Compound assignment operators
   Vector3F & operator+=(const Vector3F &v);
   Vector3F & operator-=(const Vector3F &v);
