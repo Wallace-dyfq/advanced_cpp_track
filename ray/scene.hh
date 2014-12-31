@@ -6,6 +6,8 @@
 #include <cassert>
 #include <algorithm>
 
+using namespace std;
+
 class Scene {
 
  private:
@@ -26,8 +28,8 @@ class Scene {
 
   // destructor that cleans up dynamically allocated object
   ~Scene() {
-    for_each(_lights.begin(), _lights.end(), DeleteObject<Lights>() );
-    for_each(_sceneobject.begin(), _sceneobject.end(), DeleteObject<SceneObject>() );
+    for_each(_lights.begin(), _lights.end(), DeleteObject() );
+    for_each(_sceneobject.begin(), _sceneobject.end(), DeleteObject() );
     
   }
 
@@ -36,7 +38,7 @@ class Scene {
     assert(s != 0);
     _sceneobject.push_back(s);
   }
-
+  
   void add_light (Lights * l) {
     assert(l != 0);
     _lights.push_back(l);

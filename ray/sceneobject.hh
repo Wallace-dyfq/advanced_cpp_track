@@ -3,15 +3,17 @@
 
 #include "colors.hh"
 #include "ray.hh"
+#include "vector3f.hh"
 
 #include<cmath>
 
 // ============ class SceneObject ==============
 class SceneObject {
-  protected:
+ protected:
   Colors _surface_color;
   
  public:
+
   static const float invalid;
   // Constructor
   SceneObject() {
@@ -52,8 +54,8 @@ class PlaneObject : public SceneObject {
   float _distance;
   Vector3F _surfaceNormal;
 
- public:
-  PlaneObject(const float d, const Vector3F &v, const Colors &c) : _distance(d), _surfaceNormal(v), _surface_color(c) {
+public:
+PlaneObject(const float d, const Vector3F &v, const Colors &c) :SceneObject(c), _distance(d), _surfaceNormal(v) {
     _surfaceNormal.normalize(); // incase it's not normalized 
   }
 
@@ -68,11 +70,12 @@ class PlaneObject : public SceneObject {
 
   
 
-  Vector3F surface_normal(const Vector3F &point) const {
+      Vector3F surface_normal(const Vector3F &point) const {
     // assume the point is on the plane
     return _surfaceNormal;
   }
 
+      float intersection(const Ray &r) const;
 };
 
 // ================ class SphereObject =========
@@ -85,17 +88,19 @@ class SphereObject : public SceneObject
 
  public:
   // constructor
-  SphereObject(const Vector3F &center, const float radius, const Colors surface_color) : _center(center), _radius(radius), _surface_color(surface_color) {}
+SphereObject(const Vector3F &center, const float radius, const Colors &surface_color) : SceneObject(surface_color), _center(center), _radius(radius) {}
 
   // Getters
-  Vector3F get_center() const {
-    return _center;
-  }
-  float get_radius() const {
+    Vector3F get_center() const {
+return _center;
+}
+        float get_radius() const {
     return _radius;
-  }
+}
   // helper function returns all of sphere's intersection points
-  int getIntersections(const Ray &r, float &t1, float &t2) const;
+      int getIntersections(const Ray &r, float &t1, float &t2) const;
+float intersection(const Ray &r) const;
+Vector3F surface_normal(const Vector3F &point ) const;
 
 };
 
@@ -103,13 +108,12 @@ class SphereObject : public SceneObject
   
 #endif // __SCENEOBJECT_HH__
 
-/ static member
+// static member
 const float SceneObject::invalid = -1;
 
 //A pure-virtual function that computes
 //whether or not an intersection occurred.
 
-/
 
 // float SceneObject::intersection(const Ray &r) const {
 
@@ -144,10 +148,10 @@ float PlaneObject::intersection(const Ray &r) const {
     Vector3F D = r.get_direction();
     Vector3F P = r.get_origin();
     Vector3F C = _center;
-    float r = _radius;
+    float rr = _radius;
     float a = D * D;
     float b = 2 * (P * D - D * C);
-    float c = P * P + C * C - 2 * (P * C) - r * r;
+    float c = P * P + C * C - 2 * (P * C) - rr * rr;
 
     float tmp = b * b - 4 * a * c;
     if (tmp > 0)
@@ -170,7 +174,7 @@ float PlaneObject::intersection(const Ray &r) const {
       else
         return 2;
     }
-    else if (tmp = 0)
+    else if (tmp == 0)
     {
       t1 = (-b) / (2 * a);
       t2 = invalid;

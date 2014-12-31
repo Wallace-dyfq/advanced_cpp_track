@@ -39,4 +39,4 @@ class Ray {
 
 
 
-#endif / __RAY_HH_
+#endif // __RAY_HH_

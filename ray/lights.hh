@@ -1,7 +1,7 @@
 #ifndef __LIGHT_HH__
 #define __LIGHT_HH__
 #include "vector3f.hh"
-#include "color.hh"
+#include "colors.hh"
 class Lights {
  private:
   Vector3F _position;
