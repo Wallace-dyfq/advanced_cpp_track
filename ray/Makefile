@@ -1,0 +1,22 @@
+
+# Flags passed to the c++ compiler
+CXXFLAGS += -Wall
+
+OBJS = rt.o colors.o vector3f.o
+CCFILES = rt.cc colors.cc vector3f.cc
+EXECUTABLE = rt.o
+
+all : $(OBJS) $(CCFILES)
+
+$(EXECUTABLE) : $(OBJS)
+	g++ $(CXXFLAGS) $(OBJS) -o $@
+rt.o : rt.cc
+	g++ -c rt.cc
+colors.o : colors.cc colors.hh
+	g++ -c colors.cc
+vector3f : vector3f.hh vector3f.cc
+	g++ -c vector3f.cc
+clean :
+	rm -f myscene*.0 
+
+.PHONY : clean
