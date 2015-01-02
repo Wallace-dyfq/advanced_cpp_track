@@ -39,9 +39,9 @@ int main()
   // output to a file
 
   ofstream os;
-  os.open("myscene.ppm");
-  cerr<< "here at line 40"<<endl;
-  myscene.render(cam, 15, os);
+  os.open("myscene1.ppm");
+ 
+  myscene.render(cam, 1000, os);
 
 }
   

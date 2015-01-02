@@ -72,8 +72,7 @@ PlaneObject(const float d, const Vector3F &v, const Colors &c) :SceneObject(c), 
 
   Vector3F surface_normal(const Vector3F &point) const {
     // assume the point is on the plane
-    std::cerr<<"can you see me at plane's surface_normal() ?"<<std::endl;
-    return _surfaceNormal;
+        return _surfaceNormal;
   }
 
   float intersection(const Ray &r) const;
@@ -127,7 +126,7 @@ const float SceneObject::invalid = -1;
 
 
 float PlaneObject::intersection(const Ray &r) const {
-  std::cerr<<"called plane intersect"<<std::endl;
+
     Vector3F P = r.get_origin();
     Vector3F D = r.get_direction();
 
@@ -149,7 +148,7 @@ float PlaneObject::intersection(const Ray &r) const {
 
 
   int SphereObject::getIntersections(const Ray &r, float &t1, float &t2) const {
-    std::cerr<<"called spherere getIntersections"<<std::endl;
+
        
     Vector3F D = r.get_direction();
     Vector3F P = r.get_origin();
@@ -214,7 +213,6 @@ float SphereObject::intersection(const Ray &r) const
 }
 
 Vector3F SphereObject::surface_normal(const Vector3F &point ) const {
-  std::cerr<< "inside surface_normal of SphereObject"<<std::endl;
   Vector3F X = point;
   Vector3F C = _center;
 

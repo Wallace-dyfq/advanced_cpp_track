@@ -1,4 +1,5 @@
 #include "colors.hh"
+#include<cmath>
 
 // component-wise adding
 Colors & Colors::operator+= (const Colors & c) {
@@ -75,14 +76,16 @@ std::ostream & operator<< (std::ostream &os, const Colors &c) {
 
 
 void Colors::clamp(int minVal, int maxVal) {
-  assert(red < maxVal);
-  assert(red > minVal);
-  assert(blue < maxVal);
-  assert(blue > minVal);
-  assert(green < maxVal);
-  assert(green > minVal);
+  
+  float mymax = fmaxf(red, blue);
+  mymax = fmaxf(mymax, green);
+  mymax = fmaxf(mymax, maxVal);
 
-  red = red / maxVal;
-  blue = blue / maxVal;
-  green = green / maxVal;
+  red = red / mymax;
+  blue = blue / mymax;
+  green = green / mymax;
+  assert( red <= 1);
+  assert(blue <= 1);
+  assert(green <= 1);
+
 };
