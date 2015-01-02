@@ -8,7 +8,10 @@
 #include <functional>
 #include <iostream>
 #include <cmath>
-
+#include "camera.hh"
+#include<fstream>
+#include <iterator>
+#include <algorithm>  // for_each
 using namespace std;
 
 class Scene {
@@ -54,7 +57,7 @@ class Scene {
       Return: a Color - the actual color value for that ray.
 
       this function should be a const */
-  Color traceRay(const Ray &r) const;
+  Colors traceRay(const Ray &r) const;
 
   /** A helper function that takes a ray and returns the closest
       scene object and time of intersection.
@@ -68,66 +71,101 @@ class Scene {
       but this is a simple and effective mechanism.) 
    */
 
-  ceneObject * findClosestObject(const Ray &r, float &tIntersect) const;
+  SceneObject * findClosestObject(const Ray &r, float &tIntersect) const;
+
+  void render(const Camera &cam, int imgSize, ostream &os);
 
 };
 
 
-#endif // __SCENE_HH__
+
+// ================= implementations ======================
 
 
 
-
-Color Scene::traceRay(const Ray &r) const{
+Colors Scene::traceRay(const Ray &r) const{
   float tIntersect;
   SceneObject *sc ;
   sc = findClosestObject(r, tIntersect);
   if (sc == 0 )
-    return Color(0, 0, 0);
+    return Colors(0, 0, 0);
   else
   {
     Colors FinalColor;
-    Vector<*Lights> :: iterator iter;
-    
-    for(iter = _lights.begin(); iter != _lights.end(); ++iter) {
+    typedef typename vector<Lights *> ::const_iterator Con_iter;
+    for(Con_iter iter = _lights.begin(); iter != _lights.end(); ++iter) {
 
-      Vector3F light_loc = iter->get_position();
+      
+      Vector3F light_loc = (*iter)->get_position();
       Vector3F intersect_loc = r.get_origin() + r.get_direction() * tIntersect;
       Vector3F L = light_loc - intersect_loc;
-      Vector3F N = sc->get_surface_normal();
+      Vector3F N = sc->surface_normal(light_loc);
       L.normalize();
-      FinalColor += iter->get_color() * sc->get_surface_color() * fmaxf((N * L), 0);      
+      FinalColor += (*iter)->get_color() * sc->get_surface_color() * fmaxf((N * L), 0);      
     }
+    return FinalColor;
   }
 
-  return FinalColor;
+  
 }
 
-
-SceneObject * Scene::findClosestObject(const Ray &r, float &tIntersect) const{
-
-  /** Function generator to be used in the function findClosestObject
-    
+ /** Function generator to be used in the function findClosestObject
    */
-  struct min_t : public unary_function<SceneObject *, void> {
+  //Ray rr = r;
+ 
+ struct min_t : public unary_function<SceneObject *, void> {
     float tIntersect ; // closest intersection time;
-    SceneObject * closest_object;  // keep track of the closest object
-    closest_object = 0;  // assume no intersection
-    min_t () : tIntersect(1000000) {}
+    SceneObject* oIntersection ;  // keep track of the closest object
+    // oIntersection = 0;  // assume no intersection
+    Ray rr;
 
-    void  operator() (const SceneObject * sc) {
-      float tmp_t = sc->intersection(r);
+    
+    min_t (const Ray & ray, float t=1000000) : rr(ray),tIntersect(t) {}
+
+    void  operator() ( SceneObject * sc) {
+      float tmp_t = sc->intersection(rr);
       if (tmp_t >= 0 && tmp_t < tIntersect)
       {
         tIntersect = tmp_t;
-        closest_object = sc;
+        oIntersection = sc;
       }
     }
-  } ;
+  };
+
+SceneObject * Scene::findClosestObject(const Ray &r, float &tIntersect) const{
+
+ 
+
+ 
   
-  min_t result = for_each(_sceneobject.begin(), _sceneobject.end(), min_t());
+  min_t result= for_each(_sceneobject.begin(), _sceneobject.end(), min_t(r));
   tIntersect = result.tIntersect;
-  return result.closest_object;
+  return result.oIntersection;;
 
 
 }
+void Scene::render(const Camera &cam, int imgSize, ostream &os)
+{
+  os<<"P3 " << imgSize <<" " << imgSize <<" 255" << endl;
+  
+  // This code is rife with opportunities to optimize...
+  for (int y = 0; y < imgSize; y++)
+  {
+    for (int x = 0; x < imgSize; x++)
+    {
+      Ray pixelRay = cam.getRayForPixel(x, y, imgSize);
+      Colors pixelColor = traceRay(pixelRay);
+
+      // Output color value to output stream, in proper image format.
+
+      pixelColor *= 255;
+      pixelColor.clamp(0, 255);
+      int r = 255 * pixelColor.get_red();
+      int b = 255 * pixelColor.get_blue();
+      int g = 255 * pixelColor.get_green();
+      os << r << " " << g << " " << b << std::endl;
+
+    }
+  }
+}
+#endif // __SCENE_HH__

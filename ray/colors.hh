@@ -1,6 +1,7 @@
 #ifndef __COLORS_HH__
 #define __COLORS_HH__
 #include<iostream>
+#include <cassert>
 
 class Colors {
 
@@ -55,7 +56,13 @@ class Colors {
   // Compound assignment operators *= and /= for
   //multiplying and dividing a color by a scalar.
   Colors & operator*= (const float f) ;
+  const   Colors operator* (const float f)  const;
+  
   Colors & operator/= (const float f) ;
+
+  const  Colors operator/ (const float t) const;
+
+  void clamp(int minVal = 0, int maxVal = 255);
   
 
 };

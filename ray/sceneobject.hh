@@ -106,7 +106,7 @@ Vector3F surface_normal(const Vector3F &point ) const;
 
   
   
-#endif // __SCENEOBJECT_HH__
+
 
 // static member
 const float SceneObject::invalid = -1;
@@ -216,3 +216,4 @@ Vector3F SphereObject::surface_normal(const Vector3F &point ) const {
   return Vector3F(tmp/n);
 }
 
+#endif // __SCENEOBJECT_HH__

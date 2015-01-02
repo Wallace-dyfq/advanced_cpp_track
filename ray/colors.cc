@@ -48,6 +48,10 @@ Colors & Colors::operator *= (const float f) {
   green *= f;
   return *this;
 }
+const Colors Colors:: operator* (const float f)  const {
+  return Colors(*this) *= f;
+}
+
 
 Colors & Colors::operator /= (const float f) {
   red /= f;
@@ -56,7 +60,9 @@ Colors & Colors::operator /= (const float f) {
   return *this;
 
 }
-
+const  Colors Colors::operator/ (const float t) const {
+  return Colors(*this) /= t;
+}
 
 std::ostream & operator<< (std::ostream &os, const Colors &c) {
   os<<"("
@@ -66,3 +72,17 @@ std::ostream & operator<< (std::ostream &os, const Colors &c) {
 
   return os;
 }
+
+
+void Colors::clamp(int minVal, int maxVal) {
+  assert(red < maxVal);
+  assert(red > minVal);
+  assert(blue < maxVal);
+  assert(blue > minVal);
+  assert(green < maxVal);
+  assert(green > minVal);
+
+  red = red / maxVal;
+  blue = blue / maxVal;
+  green = green / maxVal;
+};
