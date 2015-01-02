@@ -1,8 +1,7 @@
 
 # Flags passed to the c++ compiler
+CXXFLAGS += -Wall
 
-BOOST_INC =/usr/include/boost/
-CXXFLAGS += -Wall -I$(BOOST_INC)
 OBJS = rt.o colors.o vector3f.o
 CCFILES = rt.cc colors.cc vector3f.cc
 EXECUTABLE = main.o

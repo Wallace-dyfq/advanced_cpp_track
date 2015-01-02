@@ -12,40 +12,55 @@
 #include<fstream>
 #include <iterator>
 #include <algorithm>  // for_each
+#include "boost/shared_ptr.hpp"
+
 using namespace std;
 
 class Scene {
+ public:
+  typedef boost::shared_ptr<Lights> SPLights ;
+  typedef boost::shared_ptr<SceneObject> SPSceneObject;
+  typedef boost::shared_ptr<SphereObject> SPSphereObject;
+  typedef boost::shared_ptr<PlaneObject> SPPlaneObject;
 
  private:
-  vector<Lights *> _lights;
-  vector<SceneObject *> _sceneobject;
+  
+  // vector<Lights *> _lights;
+  // vector<SceneObject *> _sceneobject;
 
-  struct DeleteObject {
-    template<typename T>
-    void operator() (const T *ptr) const
-    {
-      delete ptr;
-    }    
-  };
+  // struct DeleteObject {
+  //   template<typename T>
+  //   void operator() (const T *ptr) const
+  //   {
+  //     delete ptr;
+  //   }    
+  // };
 
+  // use boost
+  
+  vector<SPLights> _lights;
+  vector<SPSceneObject> _sceneobject;
  public:
   // default constructor that does nothing
   Scene() {}
 
   // destructor that cleans up dynamically allocated object
   ~Scene() {
-    for_each(_lights.begin(), _lights.end(), DeleteObject() );
-    for_each(_sceneobject.begin(), _sceneobject.end(), DeleteObject() );
+    // no need to clean up since we are using the boost shared_ptr
+    
+    // for_each(_lights.begin(), _lights.end(), DeleteObject() );
+    // for_each(_sceneobject.begin(), _sceneobject.end(), DeleteObject() );
     
   }
 
   
-  void add_scene_object(SceneObject * s) {
+  //void add_scene_object(SceneObject * s) {
+  void add_scene_object(SPSceneObject  s) {
     assert(s != 0);
     _sceneobject.push_back(s);
   }
   
-  void add_light (Lights * l) {
+  void add_light (SPLights  l) {
     assert(l != 0);
     _lights.push_back(l);
   }
@@ -71,7 +86,8 @@ class Scene {
       but this is a simple and effective mechanism.) 
   */
 
-  SceneObject * findClosestObject(const Ray &r, float &tIntersect) const;
+  SPSceneObject  findClosestObject(const Ray &r, float &tIntersect) const;
+  //   SceneObject * findClosestObject(const Ray &r, float &tIntersect) const;
 
   void render(const Camera &cam, int imgSize, ostream &os);
 
@@ -86,7 +102,9 @@ class Scene {
 Colors Scene::traceRay(const Ray &r) const{
   float bigNumber = 1000000;
   float tIntersect(bigNumber);
-  SceneObject *sc ;
+  SPSceneObject sc ;
+
+  //SceneObject *sc ;
   sc = findClosestObject(r, tIntersect);
  
   if (sc ==0 || tIntersect == bigNumber ) 
@@ -96,7 +114,8 @@ Colors Scene::traceRay(const Ray &r) const{
   {
    
     Colors FinalColor;
-     typename vector<Lights *> ::const_iterator iter;
+    // typename vector<Lights *> ::const_iterator iter;
+     typename vector<SPLights> ::const_iterator iter;
     for(iter = _lights.begin(); iter != _lights.end(); ++iter) {
      
       Vector3F light_loc = (*iter)->get_position();
@@ -118,16 +137,18 @@ Colors Scene::traceRay(const Ray &r) const{
    */
   //Ray rr = r;
  
- struct min_t : public unary_function<SceneObject *, void> {
+// struct min_t : public unary_function<SceneObject* , void> {
+struct min_t : public unary_function<Scene::SPSceneObject , void> {
     float tIntersect ; // closest intersection time;
-    SceneObject* oIntersection ;  // keep track of the closest object
+  //    SceneObject* oIntersection ;  // keep track of the closest object
+  Scene::SPSceneObject oIntersection ;  // keep track of the closest object
     // oIntersection = 0;  // assume no intersection
     Ray rr;
 
     
     min_t (const Ray & ray, float t=1000000) : rr(ray),tIntersect(t) {}
-
-    void  operator() ( SceneObject * sc) {
+  //  void  operator() ( SceneObject * sc) {
+  void  operator() ( Scene::SPSceneObject  sc) {
       float tmp_t = sc->intersection(rr);
       if (tmp_t >= 0 && tmp_t < tIntersect)
       {
@@ -138,7 +159,8 @@ Colors Scene::traceRay(const Ray &r) const{
     }
   };
 
-SceneObject * Scene::findClosestObject(const Ray &r, float &tIntersect) const{
+//SceneObject*  Scene::findClosestObject(const Ray &r, float &tIntersect) const{
+Scene::SPSceneObject  Scene::findClosestObject(const Ray &r, float &tIntersect) const{
 
  
 
@@ -150,6 +172,8 @@ SceneObject * Scene::findClosestObject(const Ray &r, float &tIntersect) const{
 
 
 }
+
+
 void Scene::render(const Camera &cam, int imgSize, ostream &os)
 {
   os<<"P3 " << imgSize <<" " << imgSize <<" 255" << endl;
