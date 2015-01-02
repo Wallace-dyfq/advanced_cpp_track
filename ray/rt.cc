@@ -65,9 +65,9 @@ int main()
   // output to a file
 
   ofstream os;
-  os.open("myscene2.ppm");
+  os.open("myscene.ppm");
  
-  myscene.render(cam, 10, os);
+  myscene.render(cam, 1000, os);
 
 }
   

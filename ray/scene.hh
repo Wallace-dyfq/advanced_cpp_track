@@ -20,8 +20,10 @@ class Scene {
  public:
   typedef boost::shared_ptr<Lights> SPLights ;
   typedef boost::shared_ptr<SceneObject> SPSceneObject;
-  typedef boost::shared_ptr<SphereObject> SPSphereObject;
-  typedef boost::shared_ptr<PlaneObject> SPPlaneObject;
+
+  // no need to use them
+  //  typedef boost::shared_ptr<SphereObject> SPSphereObject;
+  //typedef boost::shared_ptr<PlaneObject> SPPlaneObject;
 
  private:
   
