@@ -87,20 +87,29 @@ Colors Scene::traceRay(const Ray &r) const{
   float tIntersect;
   SceneObject *sc ;
   sc = findClosestObject(r, tIntersect);
-  if (sc == 0 )
+  cerr<<"line 90"<<endl;
+  cout<<"sc color is"<<sc->get_surface_color()<<endl;
+
+  cerr<<"inside traceRay, after calling findClosestObject"<<endl;
+  if (tIntersect == -1 )
     return Colors(0, 0, 0);
   else
   {
+   
     Colors FinalColor;
-    typedef typename vector<Lights *> ::const_iterator Con_iter;
-    for(Con_iter iter = _lights.begin(); iter != _lights.end(); ++iter) {
-
-      
+     typename vector<Lights *> ::const_iterator iter;
+    for(iter = _lights.begin(); iter != _lights.end(); ++iter) {
+     
       Vector3F light_loc = (*iter)->get_position();
       Vector3F intersect_loc = r.get_origin() + r.get_direction() * tIntersect;
       Vector3F L = light_loc - intersect_loc;
+      cerr<<"inside traceRay, at line 104"<<endl;
+      cout<<"light_loc is: "<<light_loc<<endl;
       Vector3F N = sc->surface_normal(light_loc);
+      
+       cerr<<"inside traceRay, at line 106"<<endl;
       L.normalize();
+      cerr<<"inside traceRay, at line 106"<<endl;
       FinalColor += (*iter)->get_color() * sc->get_surface_color() * fmaxf((N * L), 0);      
     }
     return FinalColor;
@@ -124,10 +133,12 @@ Colors Scene::traceRay(const Ray &r) const{
 
     void  operator() ( SceneObject * sc) {
       float tmp_t = sc->intersection(rr);
+      cerr<<"tmp_t is "<<tmp_t<<endl;
       if (tmp_t >= 0 && tmp_t < tIntersect)
       {
         tIntersect = tmp_t;
         oIntersection = sc;
+        cerr<<"inside find object"<<endl;
       }
     }
   };
@@ -149,13 +160,16 @@ void Scene::render(const Camera &cam, int imgSize, ostream &os)
   os<<"P3 " << imgSize <<" " << imgSize <<" 255" << endl;
   
   // This code is rife with opportunities to optimize...
+
+  cerr<<"inside render function"<<endl;
   for (int y = 0; y < imgSize; y++)
   {
     for (int x = 0; x < imgSize; x++)
     {
       Ray pixelRay = cam.getRayForPixel(x, y, imgSize);
+      cerr<<"line 159 of scene.hh inside the render function, after calling camere.getRayForPixel"<<endl;
       Colors pixelColor = traceRay(pixelRay);
-
+      cerr<<"line 161 of scene.hh inside the render function, after calling traceRay"<<endl;
       // Output color value to output stream, in proper image format.
 
       pixelColor *= 255;
