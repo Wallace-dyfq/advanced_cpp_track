@@ -4,9 +4,9 @@ CXXFLAGS += -Wall
 
 OBJS = rt.o colors.o vector3f.o
 CCFILES = rt.cc colors.cc vector3f.cc
-EXECUTABLE = rt.o
+EXECUTABLE = main.o
 
-all : $(OBJS) $(CCFILES)
+all : $(EXECUTABLE)
 
 $(EXECUTABLE) : $(OBJS)
 	g++ $(CXXFLAGS) $(OBJS) -o $@
@@ -17,6 +17,6 @@ colors.o : colors.cc colors.hh
 vector3f : vector3f.hh vector3f.cc
 	g++ -c vector3f.cc
 clean :
-	rm -f myscene*.0 
+	rm -f *.o
 
 .PHONY : clean
