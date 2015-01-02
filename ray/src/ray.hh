@@ -1,3 +1,6 @@
+/** A clas to represent rays being trace, rays require two data members:   the origin that the ray is emitted from, and the direction that the ray is headed. Represent both of these values with your vector3f class 
+
+ */
 #ifndef __RAY_HH_
 #define __RAY_HH_
 

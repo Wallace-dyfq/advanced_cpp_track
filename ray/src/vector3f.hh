@@ -1,3 +1,7 @@
+/** A class to represent 3D vectors. Vector elements are floating -point values. 
+
+ */
+
 #ifndef __VECTOR3F_HH__
 #define __VECTOR3F_HH__
 #include<cassert>
@@ -20,35 +24,35 @@ class Vector3F {
   Vector3F & operator+=(const Vector3F &v);
   Vector3F & operator-=(const Vector3F &v);
 
-  // Compound assignment operators
+  /**  Compound assignment operators*/
   Vector3F & operator*=(const float f);
   Vector3F & operator/=(const float f);
 
-  // Simple arithmetic operatos
+  /**  Simple arithmetic operatos */
   const Vector3F operator+ (const Vector3F &v) const;
   const Vector3F operator- (const Vector3F &v) const;
   const Vector3F operator/ (const float f) const;
 
-  // Unary minus operator
+  /** Unary minus operator */
   const Vector3F operator- () const;
 
   // operators for geting and setting the individual elements of the vector
   float operator() (int i) const; // use in RHS
   float & operator() (int i); // use in LHS
 
-  // dot product operator
+  /** dot product operator*/
   const  float operator* (const Vector3F &v) const;
 
-  // cross product operator
+  /** cross product operator */
   const Vector3F operator% (const Vector3F &v) const; 
 
-   // return a vector's magnitude squred
+  /** return a vector's magnitude squred */
   float magnitude_squred() const;
 
-  // return a vector's magnitude
+  /**  return a vector's magnitude */
   float magnitude() const;          
 
-  // normalize the vector
+  /** normalize the vector */
   void normalize() ;    
 
 };

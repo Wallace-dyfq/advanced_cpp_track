@@ -1,3 +1,4 @@
+/** a class to represent each object in a raytraced scene.  */
 #ifndef __SCENEOBJECT_HH__
 #define __SCENEOBJECT_HH__
 
@@ -8,6 +9,9 @@
 #include<cmath>
 
 // ============ class SceneObject ==============
+
+/** This class should be an abstract base class, since there is no well-defined way that generic scene objects should behave. scene object will include detailed information about its surface characteristics,
+ */
 class SceneObject {
  protected:
   Colors _surface_color;
@@ -26,19 +30,22 @@ class SceneObject {
   virtual ~SceneObject() {}
 
   
-  // get the surface_color
+  /**get the surface_color */
   Colors get_surface_color() const {
     return _surface_color;
   }
 
   
-  // mutator for surface color
+  /** mutator for surface color*/
   void set_surface_color(const Colors &c)
   {
     _surface_color = c;
   }
 
+  /** A pure-virtual function that computes whether or not an intersection occurred*/
   virtual float intersection(const Ray &r) const = 0;
+
+  /** A pure-virtual function that returns the surface normal of a point on an object.*/
   virtual Vector3F surface_normal(const Vector3F &point ) const = 0;
 
   Colors color_of_point(const Vector3F &point) const {
@@ -49,6 +56,14 @@ class SceneObject {
 };
 
 // ============== class PlaneObject ============
+
+/** A plane object of infinite size. Planes are specified by two values, a distance d from the origin, and a surface-normal N for the plane.
+     f(X) = X · N + d = 0
+
+ the plane class should have two data members:
+
+    A scalar specifying the distance of the plane from the origin. (Use the same type as your vector element type.)
+    A vector specifying the surface normal for the plane. */
 class PlaneObject : public SceneObject {
  private:
   float _distance;
@@ -75,11 +90,22 @@ PlaneObject(const float d, const Vector3F &v, const Colors &c) :SceneObject(c), 
         return _surfaceNormal;
   }
 
+  /** For a ray P + D * t, the intersection point is:
+
+      t = -(P · N + d) / (D · N)*/
   float intersection(const Ray &r) const;
 };
 
 // ================ class SphereObject =========
 
+/** A sphere object with a particular location and radius.
+
+The sphere class should have two data members:
+
+    A vector specifying the sphere's center.
+    A scalar specifying the sphere's radius.
+
+ */
 class SphereObject : public SceneObject
 {
  private:
@@ -97,9 +123,17 @@ class SphereObject : public SceneObject
   float get_radius() const {
     return _radius;
   }
-  // helper function returns all of sphere's intersection points
+  /** a public helper function that returns all of the sphere's intersection points, not just the closest one.
+  */
   int getIntersections(const Ray &r, float &t1, float &t2) const;
+
+  /** a public helper function that returns all of the sphere's intersection points, not just the closest one. */
   float intersection(const Ray &r) const;
+
+  /**  he surface normal of any point on the sphere is:
+
+    n(X) = (X - C) / |X - C|
+   */
   Vector3F surface_normal(const Vector3F &point ) const;
 
 };

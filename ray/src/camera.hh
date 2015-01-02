@@ -1,3 +1,13 @@
+/**  Create a class to represent a camera in your raytracer. The camera will need the following data members:
+
+    A vector specifying the camera's location in the scene.
+    A normalized vector specifying the direction the camera is facing.
+    A "field of view" value, specifying the horizontal viewing angle of the camera. This value can be in degrees or radians, but be sure to clearly document which units you choose! (Also, keep in mind that the standard trig functions use radians.)
+    A "camera-up" vector and a "camera-right" vector - these are perpindicular to the camera's direction vector, and they fully specify the camera's orientation. These should all be normalized.
+    A scalar "distance" value, which the camera computes to achieve the desired field of view.
+
+   The camera in a ray tracer works in a pretty simple way. It simply shoots a ray from a particular origin, through every pixel in a grid, and generates a color value for that pixel. Then, the value is written out to an image somehow. 
+ */
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
 #include "vector3f.hh"
@@ -29,7 +39,8 @@ class Camera {
 
     _distance = 0.5 / tanf(_fov / 2);
   }
-    
+
+  /** The scene object will handle the process of rendering itself, but it will use the camera object to create a ray for each pixel. */
   Ray getRayForPixel(int x, int y, int imgSize) const;
 
     

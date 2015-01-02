@@ -1,3 +1,10 @@
+/**
+a class to represent point lights, with the following state:
+
+    the position of the light
+    the color of the light
+
+ */
 #ifndef __LIGHT_HH__
 #define __LIGHT_HH__
 #include "vector3f.hh"

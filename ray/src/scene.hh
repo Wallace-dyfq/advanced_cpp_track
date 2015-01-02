@@ -1,3 +1,5 @@
+/** a class to represent a scene. The objects in the scene will be dynamically allocated, as will the lights.
+ */
 #ifndef __SCENE_HH__
 #define __SCENE_HH__
 #include <vector>
@@ -55,13 +57,14 @@ class Scene {
     
   }
 
-  
+  /** A member function to add a new scene-object, that takes a pointer to the scene-object to add. */
   //void add_scene_object(SceneObject * s) {
   void add_scene_object(SPSceneObject  s) {
     assert(s != 0);
     _sceneobject.push_back(s);
   }
-  
+
+  /** A member function to add a new light, that takes a pointer to the light to add.*/
   void add_light (SPLights  l) {
     assert(l != 0);
     _lights.push_back(l);
@@ -91,6 +94,13 @@ class Scene {
   SPSceneObject  findClosestObject(const Ray &r, float &tIntersect) const;
   //   SceneObject * findClosestObject(const Ray &r, float &tIntersect) const;
 
+  /** The render function should take the following arguments:
+
+    A reference to a camera object for generating rays into the scene. This should be const.
+    An image size in pixels. Again, we are simplifying the code by assuming that the width and height are identical.
+    An ostream-reference to write the image data to. This will be where the actual image data is written to. This cannot be const.
+
+   */
   void render(const Camera &cam, int imgSize, ostream &os);
 
 };
