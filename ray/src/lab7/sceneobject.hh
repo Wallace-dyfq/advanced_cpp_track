@@ -158,9 +158,24 @@ class SphereObject : public SceneObject
 
 };
 
-  
-  
+class CylinderObject : public SceneObject {
+ private:
+  Vector3F _position ; /**< specifies the center of the cylinder */
+  Vector3F _orientation; /**< A unit-vector that specifies the orientation of the cylinder's long axis. This vector can point in any direction, but it should be unit length*/
+  float _radius;
+  float _height; /**< a scalar, which specifies the total height of the cylinder */
+ public:
+  CylinderObject(const Vector3F &pos, const Vector3F &orien, const float &radius, const float &height, const Colors &c, const float r = 0) : SceneObject(c, r), _position(pos), _orientation(orien), _radius(radius), _height(height) {
+    _orientation.normalize();
+  }
+  ~CylinderObject() {}
+  float intersection(const Ray &r) const;
+  Vector3F surface_normal(const Vector3F &point) const;
+  void display() const;
 
+};
+  
+// ============= implementation ==================
 
 // static member
 const float SceneObject::invalid = -1;
@@ -276,33 +291,55 @@ Vector3F SphereObject::surface_normal(const Vector3F &point ) const {
 }
 
 void PlaneObject::display() const {
-  std::cout<<"Plane "<<_surfaceNormal<< " " << _distance <<" "<< _surface_color<<std::endl;
+  std::cout<<"Plane ===> "<<_surfaceNormal<< " " << _distance <<" "<< _surface_color<<" " << _reflectivity << std::endl;
 
 }
 
 void SphereObject::display() const {
-  std::cout<<"Sphere "<< _center<<" "<< _radius << " "<<_surface_color<<std::endl;
+  std::cout<<"Sphere ===>"<< _center<<" "<< _radius << " "<<_surface_color<<" " << _reflectivity << std::endl;
 }
 
 
+float CylinderObject::intersection(const Ray &r) const {
+  Vector3F C = _position;
+  Vector3F A = _orientation;
+  Vector3F P = r.get_origin();
+  Vector3F D = r.get_direction();
 
+  // Compute parallel and perpindicular components for various vectors
+  Vector3F C_par = C.project(A);
+  Vector3F C_perp = C - C_par;
 
-// moved this function to Ray class
-// const Ray SceneObject::reflection(const Ray &incidentRay, ) const{
-//   float t = intersection(incidentRay);
-//   Vector3F P = incidentRay.get_origin();
-//   Vector3F D = incidentRay.get_direction();
-//   Vector3F X = P + D * t;  // point of intersection on object
-//   Vector3F N = this->surface_normal(X); // surface normal at intersection point
+  Vector3F P_par = P.project(A);
+  Vector3F P_perp = P - P_par;
 
-//   //Compute direction of reflected ray using incident ray
-//   Vector3F D_par = Vector3F(-D).project(N);
-//   Vector3F D_r = D + 2 * D_par;
+  Vector3F D_par = D.project(A);
+  Vector3F D_perp = D - D_par;
+  
+  // Once you have these values, find the t values of intersection
+  // using the ray Pperp + t * Dperp, against a sphere located at
+  // Cperp with radius r (the cylinder radius).
+  Ray test_ray(P_perp, D_perp, false);
+  SphereObject test_sphere(C_perp, _radius, _surface_color, _reflectivity);
+  float test_t1, test_t2;
+  test_sphere.getIntersections(test_ray, test_t1, test_t2);
+  if (test_t1 >= 0 && Vector3F(P_par + D_par * test_t1 - C_par).magnitude() < _height / 2)
+    return test_t1;
+  if (test_t2 >= 0 && Vector3F(P_par + D_par * test_t2 - C_par).magnitude() < _height / 2)
+    return test_t2;
+  return invalid;
+}
 
-//   Ray new_ray(X, D_r, false);
-//   new_ray.reflect();//add a small delta value  to the origin
-//   return new_ray;  // New reflected ray
-// }
+Vector3F CylinderObject::surface_normal(const Vector3F &point) const {
 
+  Vector3F V = point - _position;
+  Vector3F V_perp = V - V.project(_orientation);
+  return  Vector3F(V_perp / V_perp.magnitude() );
+  
+}
 
+void CylinderObject::display() const {
+  std::cout <<" Cylinder ===> "<< _position << " "<< _orientation  <<" " << _radius  << _surface_color << " " << _reflectivity<< std::endl;
+
+}
 #endif // __SCENEOBJECT_HH__

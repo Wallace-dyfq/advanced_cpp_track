@@ -42,6 +42,21 @@ SPSceneObject ReadSphere(istream &is) {
   SPSceneObject sphere(new SphereObject(center, radius, color, r) );
   return sphere;
 }
+
+SPSceneObject ReadCylinder(istream &is) {
+  Vector3F position;
+  Vector3F orientation;
+  float radius;
+  float height;
+  Colors color;
+  float r; // relectivity
+  is >> position >> orientation >> radius >> height >> color >> r;
+
+  SPSceneObject cylinder(new CylinderObject(position, orientation, radius, height, color, r) );
+
+  return cylinder;
+
+}
 SPLights ReadLight(istream &is) {
   Vector3F pos;
   Colors color;
@@ -64,6 +79,7 @@ int main() {
   map<string, SceneObjectReader> readFuncs;
   readFuncs["plane" ] = ReadPlane;
   readFuncs["sphere"] = ReadSphere;
+  readFuncs["cylinder"] = ReadCylinder;
   Scene myscene;
   ifstream is;
   string filename;
@@ -76,12 +92,12 @@ int main() {
   Camera *newCamera;
   // "is" is the input stream being read
   string line;
-
+  cout <<"========================================= " << endl;
   while (getline(is, line))
   {
     istringstream iss(line);
     if (line.empty()) {
-      cout<<"\nEmpty line"<<endl;
+      cout<<"\n===============\t Empty line \t==========="<<endl;
       continue;
     }
     
@@ -94,7 +110,7 @@ int main() {
       // Retrieve and invoke the function.
       newObj = readFuncs[type](iss);
       myscene.add_scene_object(newObj);
-      cerr<<" \nFind " << type << endl;
+      cerr<<" \nFind " ; 
       newObj->display();
     }
     else if (type == "light")
@@ -103,17 +119,18 @@ int main() {
       
       newLight = ReadLight(iss);
       myscene.add_light(newLight);
-      cerr<<" \nFind " << type << endl;
+      cerr<<" \nFind ";
       newLight->display();
     }
     else if (type == "camera")
     {
     
       newCamera = ReadCamera(iss);
-      cerr<<" \nFind " << type << endl;
+      cerr<<" \nFind ";
       newCamera->display();
     
     }
+    
     else
     {
       cerr<<"\nInvalid input !!" << type <<" Please check your input file!!! " <<endl;
@@ -121,6 +138,7 @@ int main() {
   }
 
   //cerr<< " found in total " << myscene.size() << "scene objects" <<endl;
+ cout <<"\n========================================= " << endl;
   ofstream os;
   cout<<"\n\nEnter the name of the file you want to write the data into, please [end with .ppm] \t[\"myscene_lab7.ppm \"] " <<endl;
   string file_out;

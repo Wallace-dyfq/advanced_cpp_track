@@ -5,11 +5,12 @@ BOOST_INC =/usr/include/boost/
 CXXFLAGS += -Wall -I$(BOOST_INC)
 OBJS = lab7_main.o colors.o vector3f.o
 CCFILES = lab7_main.cc colors.cc vector3f.cc
+HHFILES = camera.hh  colors.hh  lights.hh  ray.hh  scene.hh  sceneobject.hh  vector3f.hh
 EXECUTABLE = lab7.o
 
 All : $(EXECUTABLE)
 
-$(EXECUTABLE) : $(OBJS)
+$(EXECUTABLE) : $(OBJS) lab7_main.cc $(HHFILES)
 	g++ $(CXXFLAGS) $(OBJS) -o $@
 lab6_readinput.o : lab6_readinput.cc
 	g++ -c lab6_readinput.cc
