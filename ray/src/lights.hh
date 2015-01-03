@@ -28,6 +28,9 @@ class Lights {
   Colors get_color() const {
     return _color;
   }
+  void display() {
+    std::cout<<"Light "<<_position<<" "<<_color<<std::endl;
+  }
 };
   
   

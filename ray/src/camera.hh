@@ -44,8 +44,11 @@ class Camera {
   Ray getRayForPixel(int x, int y, int imgSize) const;
 
     
-  
+  void display() {
+    std::cout<< "The camera's location is" << _location<<std::endl;
 
+        }
+  
 };
 
 
@@ -63,7 +66,5 @@ Ray Camera::getRayForPixel(int x, int y, int imgSize) const {
   Ray pixelRay(_location, pixelDir);
   return pixelRay;
 }
-
-
 
 #endif

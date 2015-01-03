@@ -1,5 +1,6 @@
 #include "colors.hh"
 #include<cmath>
+#include <iostream>
 
 // component-wise adding
 Colors & Colors::operator+= (const Colors & c) {
@@ -74,6 +75,29 @@ std::ostream & operator<< (std::ostream &os, const Colors &c) {
   return os;
 }
 
+std::istream &operator>>(std::istream &is, Colors &v) {
+  float v1, v2, v3;
+  char ch = 0;
+  if(!is)
+    return is;
+  is>>ch;
+  if (ch == '(') {
+    is >> v1 >> ch;
+    if (ch == ',') is >> v2 >> ch;
+    if (ch == ',') is >> v3 >> ch;
+    if (ch != ')') is.clear(std::ios_base::failbit);
+  }
+
+  else
+  {
+    is.putback(ch);
+    std:: cerr<<"wrong input" <<std::endl;
+  }
+  if (is) v=Colors(v1, v2, v3);
+  return is;
+}
+
+
 
 void Colors::clamp(int minVal, int maxVal) {
   
@@ -88,4 +112,4 @@ void Colors::clamp(int minVal, int maxVal) {
   assert(blue <= 1);
   assert(green <= 1);
 
-};
+}

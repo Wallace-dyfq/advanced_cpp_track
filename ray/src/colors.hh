@@ -70,10 +70,11 @@ class Colors {
   const  Colors operator/ (const float t) const;
 
   void clamp(int minVal = 0, int maxVal = 255);
-  
+  friend  std::istream & operator>> (std::istream &is, Colors &c);
 
 };
 
 /** stream-output operator << for  color class*/
 std::ostream & operator<< (std::ostream &os, const Colors &c) ;
+std::istream & operator>> (std::istream &is, Colors &c);
 #endif // __COLORS_HH__

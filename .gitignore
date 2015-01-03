@@ -20,4 +20,7 @@ ray/gtest-1.7.0/*
 *~
 *.un~
 #image files
-ray/*.png
+ray/src/*.png
+*.ppm
+*.png
+ray/doc

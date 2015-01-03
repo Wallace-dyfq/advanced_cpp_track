@@ -48,6 +48,7 @@ class SceneObject {
   /** A pure-virtual function that returns the surface normal of a point on an object.*/
   virtual Vector3F surface_normal(const Vector3F &point ) const = 0;
 
+  virtual void display() const = 0;
   Colors color_of_point(const Vector3F &point) const {
     return _surface_color;
   }
@@ -82,7 +83,7 @@ PlaneObject(const float d, const Vector3F &v, const Colors &c) :SceneObject(c), 
   Vector3F get_surface_normal() const {
     return _surfaceNormal;
   }
-
+  void display() const;
   
 
   Vector3F surface_normal(const Vector3F &point) const {
@@ -123,6 +124,7 @@ class SphereObject : public SceneObject
   float get_radius() const {
     return _radius;
   }
+  void display() const;
   /** a public helper function that returns all of the sphere's intersection points, not just the closest one.
   */
   int getIntersections(const Ray &r, float &t1, float &t2) const;
@@ -255,4 +257,12 @@ Vector3F SphereObject::surface_normal(const Vector3F &point ) const {
   return Vector3F(tmp/n);
 }
 
+void PlaneObject::display() const {
+  std::cout<<"Plane "<<_surfaceNormal<< " " << _distance <<" "<< _surface_color<<std::endl;
+
+}
+
+void SphereObject::display() const {
+  std::cout<<"Sphere "<< _center<<" "<< _radius << " "<<_surface_color<<std::endl;
+}
 #endif // __SCENEOBJECT_HH__

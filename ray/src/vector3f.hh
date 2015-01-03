@@ -53,7 +53,8 @@ class Vector3F {
   float magnitude() const;          
 
   /** normalize the vector */
-  void normalize() ;    
+  void normalize() ;
+  friend std::istream & operator>>(std::istream &is, Vector3F &v);
 
 };
 
@@ -66,6 +67,8 @@ const Vector3F operator* (float f, const Vector3F &v ) ;
 // stream-output operator 
 std::ostream & operator<< (std::ostream &os, const Vector3F &v) ;
 
+// stream input operator
+std::istream &operator>>(std::istream &is, Vector3F &v) ;
 
 
 #endif //__VECTOR3F_HH__

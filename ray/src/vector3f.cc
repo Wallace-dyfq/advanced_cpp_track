@@ -1,5 +1,5 @@
 #include "vector3f.hh"
-
+#include <iostream>
 Vector3F::Vector3F() {
   elems[0] = 0;
   elems[1] = 0;
@@ -103,7 +103,26 @@ const Vector3F Vector3F::operator% (const Vector3F &v) const { // cross product 
   return Vector3F(e0, e1, e2);
 }
 
+std::istream &operator>>(std::istream &is, Vector3F &v) {
+  float v1, v2, v3;
+  char ch = 0;
+  if(!is)
+    return is;
+  is>>ch;
+  if (ch == '(') {
+    is >> v1 >> ch;
+    if (ch == ',') is >> v2 >> ch;
+    if (ch == ',') is >> v3 >> ch;
+    if (ch != ')') is.clear(std::ios_base::failbit);
+  }
 
+  else
+  {
+    is.putback(ch);
+  }
+  if (is) v=Vector3F(v1, v2, v3);
+  return is;
+}
 
 
 float Vector3F::magnitude_squred() const {
