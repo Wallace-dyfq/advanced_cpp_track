@@ -44,9 +44,10 @@ class Scene {
   
   vector<SPLights> _lights;
   vector<SPSceneObject> _sceneobject;
+  const int depth_limit;
  public:
   // default constructor that does nothing
-  Scene() {}
+  Scene() : depth_limit(6) {}
 
   // destructor that cleans up dynamically allocated object
   ~Scene() {
@@ -77,7 +78,7 @@ class Scene {
       Return: a Color - the actual color value for that ray.
 
       this function should be a const */
-  Colors traceRay(const Ray &r) const;
+  Colors traceRay(const Ray &r, int depth = 0) const;
 
   /** A helper function that takes a ray and returns the closest
       scene object and time of intersection.
@@ -111,23 +112,26 @@ class Scene {
 
 
 
-Colors Scene::traceRay(const Ray &r) const{
+Colors Scene::traceRay(const Ray &r, int depth ) const{
   float bigNumber = 1000000;
   float tIntersect(bigNumber);
   SPSceneObject sc ;
 
   //SceneObject *sc ;
+  
   sc = findClosestObject(r, tIntersect);
  
   if (sc ==0 || tIntersect == bigNumber ) 
     
     return Colors(0, 0, 0);
-  else
+  else // we do have intersection
   {
    
     Colors FinalColor;
     // typename vector<Lights *> ::const_iterator iter;
-     typename vector<SPLights> ::const_iterator iter;
+
+    // get the color due to the lights
+    typename vector<SPLights> ::const_iterator iter;
     for(iter = _lights.begin(); iter != _lights.end(); ++iter) {
      
       Vector3F light_loc = (*iter)->get_position();
@@ -139,15 +143,28 @@ Colors Scene::traceRay(const Ray &r) const{
       L.normalize();
       FinalColor += (*iter)->get_color() * sc->get_surface_color() * fmaxf((N * L), 0);      
     }
+
+    // get the color due to reflection
+    if (sc->getReflectivity() != 0 && depth < depth_limit) {
+      float t = sc->intersection(r);
+      Vector3F P = r.get_origin();
+      Vector3F D = r.get_direction();
+      Vector3F X = P + D * t;  // intersection point
+      Vector3F N = sc->surface_normal(X); // normal 
+      Ray reflected_ray = r.reflect(X, N);
+      Colors reflected_color = traceRay(reflected_ray, depth+1);
+      FinalColor += sc->getReflectivity() * reflected_color;
+    }
+    
     return FinalColor;
   }
 
   
 }
 
- /** Function generator to be used in the function findClosestObject
-   */
-  //Ray rr = r;
+/** Function generator to be used in the function findClosestObject
+ */
+//Ray rr = r;
  
 // struct min_t : public unary_function<SceneObject* , void> {
 struct min_t : public unary_function<Scene::SPSceneObject , void> {
@@ -173,16 +190,9 @@ struct min_t : public unary_function<Scene::SPSceneObject , void> {
 
 //SceneObject*  Scene::findClosestObject(const Ray &r, float &tIntersect) const{
 Scene::SPSceneObject  Scene::findClosestObject(const Ray &r, float &tIntersect) const{
-
- 
-
- 
-  
   min_t result= for_each(_sceneobject.begin(), _sceneobject.end(), min_t(r));
   tIntersect = result.tIntersect;
   return result.oIntersection;;
-
-
 }
 
 

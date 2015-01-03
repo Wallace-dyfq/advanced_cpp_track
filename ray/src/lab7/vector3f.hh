@@ -55,7 +55,8 @@ class Vector3F {
   /** normalize the vector */
   void normalize() ;
   friend std::istream & operator>>(std::istream &is, Vector3F &v);
-
+  /** Project *this onto A*/
+  const Vector3F project(const Vector3F &A) const;
 };
 
 
@@ -69,6 +70,7 @@ std::ostream & operator<< (std::ostream &os, const Vector3F &v) ;
 
 // stream input operator
 std::istream &operator>>(std::istream &is, Vector3F &v) ;
+
 
 
 #endif //__VECTOR3F_HH__

@@ -50,9 +50,9 @@ Colors & Colors::operator *= (const float f) {
   green *= f;
   return *this;
 }
-const Colors Colors:: operator* (const float f)  const {
-  return Colors(*this) *= f;
-}
+// const Colors Colors:: operator* (const float f)  const {
+//   return Colors(*this) *= f;
+// }
 
 
 Colors & Colors::operator /= (const float f) {
@@ -111,5 +111,16 @@ void Colors::clamp(int minVal, int maxVal) {
   assert( red <= 1);
   assert(blue <= 1);
   assert(green <= 1);
+
+}
+
+const Colors operator* (float f, Colors color)  {
+  return Colors(color) *= f;
+
+
+}
+const Colors operator* (Colors color , float f) {
+
+  return Colors(color) *= f;
 
 }

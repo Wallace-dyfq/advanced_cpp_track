@@ -15,6 +15,7 @@
 class SceneObject {
  protected:
   Colors _surface_color;
+  float _reflectivity;
   
  public:
 
@@ -25,16 +26,25 @@ class SceneObject {
     _surface_color = c;
   }
 
-  SceneObject(const Colors &c) {_surface_color = c; }
+  SceneObject(const Colors &c, const float r = 0) {
+    _surface_color = c;
+    _reflectivity = r;
+  }
   
   virtual ~SceneObject() {}
 
-  
+  /** get reflectivity */
+  const float getReflectivity() const {
+    return _reflectivity;
+  }
   /**get the surface_color */
   Colors get_surface_color() const {
     return _surface_color;
   }
 
+  // /** Reflection computation*/
+  // I decided to put this function into Ray class
+  //   const Ray reflection(const Ray &incidentRay) const;
   
   /** mutator for surface color*/
   void set_surface_color(const Colors &c)
@@ -48,7 +58,9 @@ class SceneObject {
   /** A pure-virtual function that returns the surface normal of a point on an object.*/
   virtual Vector3F surface_normal(const Vector3F &point ) const = 0;
 
+  /** print out the content of the sceneobject*/
   virtual void display() const = 0;
+
   Colors color_of_point(const Vector3F &point) const {
     return _surface_color;
   }
@@ -71,7 +83,7 @@ class PlaneObject : public SceneObject {
   Vector3F _surfaceNormal;
 
 public:
-PlaneObject(const float d, const Vector3F &v, const Colors &c) :SceneObject(c), _distance(d), _surfaceNormal(v) {
+  PlaneObject(const float d, const Vector3F &v, const Colors &c, const float r=0) :SceneObject(c, r), _distance(d), _surfaceNormal(v) {
     _surfaceNormal.normalize(); // incase it's not normalized 
   }
 
@@ -93,8 +105,12 @@ PlaneObject(const float d, const Vector3F &v, const Colors &c) :SceneObject(c), 
 
   /** For a ray P + D * t, the intersection point is:
 
-      t = -(P · N + d) / (D · N)*/
+      t = -(P · N + d) / (D · N)
+  */
   float intersection(const Ray &r) const;
+
+  /** Reflection computation */
+  //const Ray reflection(const Ray &incidentRay) const;
 };
 
 // ================ class SphereObject =========
@@ -115,7 +131,7 @@ class SphereObject : public SceneObject
 
  public:
   // constructor
-  SphereObject(const Vector3F &center, const float radius, const Colors &surface_color) : SceneObject(surface_color), _center(center), _radius(radius) {}
+  SphereObject(const Vector3F &center, const float radius, const Colors &surface_color, const float r = 0) : SceneObject(surface_color, r), _center(center), _radius(radius) {}
 
   // Getters
   Vector3F get_center() const {
@@ -137,6 +153,8 @@ class SphereObject : public SceneObject
     n(X) = (X - C) / |X - C|
    */
   Vector3F surface_normal(const Vector3F &point ) const;
+
+  // const Ray reflection(const Ray &incidentRay) const;
 
 };
 
@@ -163,61 +181,45 @@ const float SceneObject::invalid = -1;
 
 float PlaneObject::intersection(const Ray &r) const {
 
-    Vector3F P = r.get_origin();
-    Vector3F D = r.get_direction();
+  Vector3F P = r.get_origin();  // origin of the ray
+  Vector3F D = r.get_direction(); // direction of the ray
 
-    float d = _distance; // just to make life easier
-    Vector3F N = _surfaceNormal;
+  float d = _distance; // just to make life easier
+  Vector3F N = _surfaceNormal;
 
-    float t;
-    float tmp = D * N;
-    if (tmp == 0)
+  float t;
+  float tmp = D * N;
+  if (tmp == 0)
+    return invalid;
+  else {
+    t = -(P * N + d) / tmp;
+    if (t >= 0)
+      return t;
+    else
       return invalid;
-    else {
-      t = -(P * N + d) / tmp;
-      if (t >= 0)
-        return t;
-      else
-        return invalid;
-    }
   }
+}
 
 
-  int SphereObject::getIntersections(const Ray &r, float &t1, float &t2) const {
+int SphereObject::getIntersections(const Ray &r, float &t1, float &t2) const {
 
        
-    Vector3F D = r.get_direction();
-    Vector3F P = r.get_origin();
-    Vector3F C = _center;
-    float rr = _radius;
-    float a = D * D;
-    float b = 2 * (P * D - D * C);
-    float c = P * P + C * C - 2 * (P * C) - rr * rr;
+  Vector3F D = r.get_direction();
+  Vector3F P = r.get_origin();
+  Vector3F C = _center;
+  float rr = _radius;
+  float a = D * D;
+  float b = 2 * (P * D - D * C);
+  float c = P * P + C * C - 2 * (P * C) - rr * rr;
 
-    float tmp = b * b - 4 * a * c;
-    if (tmp > 0)
+  float tmp = b * b - 4 * a * c;
+  if (tmp > 0)
+  {
+    t1 = (-b - sqrtf(tmp)) / (2 * a);
+    t2 = (-b + sqrtf(tmp)) / (2 * a);
+    if (t1 < 0 )
     {
-      t1 = (-b - sqrtf(tmp)) / (2 * a);
-      t2 = (-b + sqrtf(tmp)) / (2 * a);
-      if (t1 < 0 )
-      {
-        t1 = t2;
-        t2 = invalid;
-        if (t1 < 0)
-        {
-          t1 = invalid;
-          return 0;
-        }
-        else
-          return 1;
-        
-      }
-      else
-        return 2;
-    }
-    else if (tmp == 0)
-    {
-      t1 = (-b) / (2 * a);
+      t1 = t2;
       t2 = invalid;
       if (t1 < 0)
       {
@@ -226,13 +228,29 @@ float PlaneObject::intersection(const Ray &r) const {
       }
       else
         return 1;
+        
     }
     else
+      return 2;
+  }
+  else if (tmp == 0)
+  {
+    t1 = (-b) / (2 * a);
+    t2 = invalid;
+    if (t1 < 0)
     {
-      t1 = t2 = invalid;
+      t1 = invalid;
       return 0;
     }
+    else
+      return 1;
   }
+  else
+  {
+    t1 = t2 = invalid;
+    return 0;
+  }
+}
 
 
 
@@ -265,4 +283,26 @@ void PlaneObject::display() const {
 void SphereObject::display() const {
   std::cout<<"Sphere "<< _center<<" "<< _radius << " "<<_surface_color<<std::endl;
 }
+
+
+
+
+// moved this function to Ray class
+// const Ray SceneObject::reflection(const Ray &incidentRay, ) const{
+//   float t = intersection(incidentRay);
+//   Vector3F P = incidentRay.get_origin();
+//   Vector3F D = incidentRay.get_direction();
+//   Vector3F X = P + D * t;  // point of intersection on object
+//   Vector3F N = this->surface_normal(X); // surface normal at intersection point
+
+//   //Compute direction of reflected ray using incident ray
+//   Vector3F D_par = Vector3F(-D).project(N);
+//   Vector3F D_r = D + 2 * D_par;
+
+//   Ray new_ray(X, D_r, false);
+//   new_ray.reflect();//add a small delta value  to the origin
+//   return new_ray;  // New reflected ray
+// }
+
+
 #endif // __SCENEOBJECT_HH__

@@ -27,8 +27,9 @@ SPSceneObject ReadPlane(istream &is) {
   Vector3F surfaceNormal;
   float distance;
   Colors color;
-  is >> surfaceNormal >> distance >> color;
-  SPSceneObject plane(new PlaneObject(distance, surfaceNormal, color) );
+  float r; // reflectivity
+  is >> surfaceNormal >> distance >> color >> r;
+  SPSceneObject plane(new PlaneObject(distance, surfaceNormal, color, r) );
   return plane;
 }
 
@@ -36,8 +37,9 @@ SPSceneObject ReadSphere(istream &is) {
   float radius;
   Vector3F center;
   Colors color;
-  is >> center >> radius >> color;
-  SPSceneObject sphere(new SphereObject(center, radius, color) );
+  float r; // reflectivity
+  is >> center >> radius >> color >> r;
+  SPSceneObject sphere(new SphereObject(center, radius, color, r) );
   return sphere;
 }
 SPLights ReadLight(istream &is) {
@@ -120,11 +122,11 @@ int main() {
 
   //cerr<< " found in total " << myscene.size() << "scene objects" <<endl;
   ofstream os;
-  cout<<"\n\nEnter the name of the file you want to write the data into, please [end with .ppm] \t[\"myscene_lab6.ppm \"] " <<endl;
+  cout<<"\n\nEnter the name of the file you want to write the data into, please [end with .ppm] \t[\"myscene_lab7.ppm \"] " <<endl;
   string file_out;
   //cin>>file_out;
   getline(cin, file_out);
-  if (file_out.empty()) file_out = "myscene_lab6.ppm";
+  if (file_out.empty()) file_out = "myscene_lab7.ppm";
   os.open(file_out.c_str());
  
    myscene.render(*newCamera, 250, os);

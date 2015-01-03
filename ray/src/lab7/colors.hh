@@ -63,7 +63,7 @@ class Colors {
    multiplying and dividing a color by a scalar.*/
   Colors & operator*= (const float f) ;
   
-  const   Colors operator* (const float f)  const;
+  //const   Colors operator* (const float f)  const;
   
   Colors & operator/= (const float f) ;
 
@@ -77,4 +77,7 @@ class Colors {
 /** stream-output operator << for  color class*/
 std::ostream & operator<< (std::ostream &os, const Colors &c) ;
 std::istream & operator>> (std::istream &is, Colors &c);
+
+const Colors operator* (float f, Colors color);
+const Colors operator* (Colors color , float f);
 #endif // __COLORS_HH__

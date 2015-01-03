@@ -38,8 +38,20 @@ class Ray {
     return origin + direction * t;
   }
 
-};
-
+  /** reflect a ray off a position with a surface normal */
+  //  we add a small delta value to the intersectoin.
+  //This ensures that the new ray doesn't immediately intersect
+  //with the object that it is reflected from!
+  Ray reflect(const Vector3F intersection, const Vector3F &N, const float delta = 0.0001) const
+  {
+    Vector3F D = direction;
+    Vector3F D_par = Vector3F(-D).project(N);
+    Vector3F D_r = D + 2 * D_par;
+    return Ray(intersection + D_r * delta, D_r);
+  }
+    
+  };
+  
 
 
 #endif // __RAY_HH_

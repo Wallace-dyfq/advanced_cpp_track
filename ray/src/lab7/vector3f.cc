@@ -140,3 +140,7 @@ void Vector3F::normalize() {  // normalize the vector
   *this /= mag;
 }
 
+// not sure which is better, to implement project in the member function or standalone function
+const Vector3F Vector3F::project(const Vector3F &A) const {
+  return Vector3F(A * (((*this) * A) / (A * A)));
+}
